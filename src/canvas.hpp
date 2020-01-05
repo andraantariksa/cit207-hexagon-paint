@@ -1,21 +1,28 @@
 #pragma once
 
-class Window: public sf::RenderWindow
+#include <SFML/Graphics.hpp>
+
+#include <cmath>
+#include <cstdio>
+
+#include "color.hpp"
+
+class Canvas: public sf::Drawable
 {
-    public:
+    private:
     sf::Texture texture;
     sf::Sprite sprite;
     sf::Uint8 *pixels;
 
-    Window(const unsigned int window_width, const unsigned int window_height, sf::String title)
-        : sf::RenderWindow(sf::VideoMode(window_width, window_height, 32), title)
+    public:
+    Canvas(const unsigned int window_width, const unsigned int window_height)
     {
         this->pixels = new sf::Uint8[window_width * window_height * 4];
         this->texture.create(window_width, window_height);
         this->sprite.setTexture(this->texture);
     }
 
-    ~Window()
+    ~Canvas()
     {
         delete pixels;
     }
@@ -95,7 +102,11 @@ class Window: public sf::RenderWindow
 
     void update()
     {
-        texture.update(this->pixels);
-        this->draw(this->sprite);
+        this->texture.update(this->pixels);
+    }
+
+    void draw(sf::RenderTarget& target, sf::RenderStates states) const
+    {
+        target.draw(sprite);
     }
 };

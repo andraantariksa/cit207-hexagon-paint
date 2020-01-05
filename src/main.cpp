@@ -9,8 +9,6 @@
 // 3. MID
 #define _LINE_ALGORITHM 1
 
-#include "color.hpp"
-#include "window.hpp"
 #include "application.hpp"
 
 int main(int argc, char *argv[])
