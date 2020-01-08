@@ -4,8 +4,17 @@
 
 #include <cmath>
 #include <cstdio>
+#include <vector>
 
 #include "color.hpp"
+
+class Canvas;
+
+class CanvasDrawable
+{
+    public:
+    virtual void draw(Canvas*) = 0;
+};
 
 class Canvas: public sf::Drawable
 {
@@ -36,73 +45,18 @@ class Canvas: public sf::Drawable
         this->pixels[current_pixel_pos + 3] = color.getAlpha();
     }
 
-    void line(size_t x1, size_t y1, size_t x2, size_t y2, Color color)
-    {
-        #if _LINE_ALGORITHM == 1
-
-        double delta_y = (double) (y2 - y1);
-        double delta_x = (double) (x2 - x1);
-        double gradient = delta_y / delta_x;
-
-        double c = (double) y1 - gradient * (double) x1;
-        
-        for (size_t x = x1; x <= x2; x++)
-        {
-            double y = gradient * (double) x + c;
-            this->setPixel(x, (size_t) std::round(y), color);
-        }
-
-        #elif _LINE_ALGORITHM == 2
-        
-        double delta_y = (double) (y2 - y1);
-        double delta_x = (double) (x2 - x1);
-        double gradient = delta_y / delta_x;
-
-        size_t x = x1;
-        double y = (double) y1;
-
-        while (x <= x2)
-        {
-            this->setPixel(x, (size_t) std::round(y), color);
-            x += 1;
-            y += gradient;
-        }
-
-        #elif _LINE_ALGORITHM == 3
-        
-        // TODO
-
-        size_t delta_y = y2 - y1;
-        size_t delta_x = x2 - x1;
-
-        size_t D = 2 * delta_y - delta_x;
-        size_t y = y1;
-
-        for (size_t x = x1; x <= x2; x++)
-        {
-            this->setPixel(x, y, color);
-            if (D > 0)
-            {
-                y += 1;
-                D = D - 2 * delta_x;
-            }
-            D = D + 2 * delta_y;
-        }
-
-        #endif
-    }
-
-    double lineSlope(size_t x1, size_t y1, size_t x2, size_t y2)
-    {
-        double delta_y = (double)(y2 - y1);
-        double delta_x = (double)(x2 - x1);
-        double gradient = delta_y / delta_x;
-        return std::atan(gradient);
-    }
-
     void update()
     {
         this->texture.update(this->pixels);
+    }
+
+    void drawShapes(std::vector<CanvasDrawable*> canvas_drawables)
+    {
+        for (std::vector<CanvasDrawable*>::iterator it = canvas_drawables.begin();
+            it != canvas_drawables.end(); ++it)
+        {
+            (*it)->draw(this);
+        }
     }
 
     void draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -110,3 +64,5 @@ class Canvas: public sf::Drawable
         target.draw(sprite);
     }
 };
+
+#include "shape/line.hpp"

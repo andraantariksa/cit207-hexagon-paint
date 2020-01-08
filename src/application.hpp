@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 
 #include <cstdio>
+#include <vector>
 
 #include "fps.hpp"
 #include "canvas.hpp"
@@ -51,7 +52,32 @@ class Application
             this->window->clear();
             
             // Begin canvas draw
-            this->canvas->line(0, 0, 100, 300, Color::Red());
+            
+            this->canvas->setPixel(75, 75, Color::Red());
+            std::vector<CanvasDrawable*> shapes;
+
+            shape::Line line_right = shape::Line::from(100, 50)
+                .to(100, 100)
+                .build();
+            shapes.push_back(&line_right);
+
+            shape::Line line_left = shape::Line::from(50, 100)
+                .to(50, 50)
+                .build();
+            shapes.push_back(&line_left);
+            
+            shape::Line line_bottom = shape::Line::from(50, 100)
+                .to(100, 100)
+                .build();
+            shapes.push_back(&line_bottom);
+
+            shape::Line line_top = shape::Line::from(50, 50)
+                .to(100, 50)
+                .build();
+            shapes.push_back(&line_top);
+
+            this->canvas->drawShapes(shapes);
+
             // End canvas draw
 
             this->canvas->update(); // Shouldn't be call this, it should be done automatically
