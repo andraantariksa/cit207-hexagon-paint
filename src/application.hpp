@@ -53,8 +53,49 @@ class Application
             
             // Begin canvas draw
             
-            this->canvas->setPixel(75, 75, Color::Red());
             std::vector<CanvasDrawable*> shapes;
+            shape::Line down = shape::Line::from(400, 400)
+                .to(400, 500)
+                .build();
+            shapes.push_back(&down);
+
+            shape::Line rightdown = shape::Line::from(400, 400)
+                .to(500, 500)
+                .build();
+            shapes.push_back(&rightdown);
+
+            shape::Line leftdown = shape::Line::from(400, 400)
+                .to(300, 500)
+                .build();
+            shapes.push_back(&leftdown);
+
+            shape::Line right = shape::Line::from(400, 400)
+                .to(500, 401)
+                .build();
+            shapes.push_back(&right);
+
+            shape::Line rightup = shape::Line::from(400, 400)
+                .to(500, 300)
+                .build();
+            shapes.push_back(&rightup);
+
+            shape::Line leftup = shape::Line::from(400, 400)
+                .to(300, 300)
+                .build();
+            shapes.push_back(&leftup);
+
+            shape::Line up = shape::Line::from(400, 400)
+                .to(400, 300)
+                .build();
+            shapes.push_back(&up);
+
+            shape::Line left = shape::Line::from(400, 400)
+                .to(300, 400)
+                .build();
+            shapes.push_back(&left);
+
+            // Begin assignment box with dot in the center
+            this->canvas->setPixel(75, 75, Color::Red());
 
             shape::Line line_right = shape::Line::from(100, 50)
                 .to(100, 100)
@@ -77,6 +118,8 @@ class Application
             shapes.push_back(&line_top);
 
             this->canvas->drawShapes(shapes);
+
+            // End assignment box with dot in the center
 
             // End canvas draw
 

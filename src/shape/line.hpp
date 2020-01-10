@@ -19,7 +19,26 @@ namespace shape
 
         void draw(Canvas* canvas)
         {
-            #if _LINE_ALGORITHM == 1
+            #if _LINE_ALGORITHM == 0
+
+            if (x2 < x1)
+            {
+                std::swap(x1, x2);
+                std::swap(y1, y2);
+            }
+
+            double y;
+            double dx = (double) ((int) x2 - (int) x1);
+            double dy = (double) ((int) y2 - (int) y1);
+            double gradient = dx / dy;
+
+            for (std::size_t x = x1; x <= x2; x++)
+            {
+                y = (double) y1 + (gradient * (double) ((int) x - (int) x1));
+                canvas->setPixel(x, (std::size_t) std::round(y), this->color);
+            }
+
+            #elif _LINE_ALGORITHM == 1
 
             // Have a problem when delta_x < delta_y
             double delta_y = (double)(y2 - y1);
@@ -35,16 +54,10 @@ namespace shape
             }
 
             #elif _LINE_ALGORITHM == 2
-            
-            if (x2 < x1 || y2 < y1)
-            {
-                std::swap(x1, x2);
-                std::swap(y1, y2);
-            }
 
-            double step;
-            double delta_y = (double) (y2 - y1);
-            double delta_x = (double) (x2 - x1);
+            std::size_t step;
+            double delta_y = (double) ((int) y2 - (int) y1);
+            double delta_x = (double) ((int) x2 - (int) x1);
 
             if (std::abs(delta_x) >= std::abs(delta_y))
             {
@@ -55,18 +68,16 @@ namespace shape
                 step = (std::size_t) std::abs(delta_y);
             }
 
-            delta_x = delta_x / step;
-            delta_y = delta_y / step;
+            delta_x = delta_x / (double) step;
+            delta_y = delta_y / (double) step;
             std::size_t x = x1;
             std::size_t y = y1;
-            std::size_t i = 1;
 
-            while (i <= step)
+            for (std::size_t i = 0; i <= step; ++i)
             {
                 canvas->setPixel(x, y, this->color);
                 x = x + delta_x;
                 y = y + delta_y;
-                i = i + 1;
             }
 
             #elif _LINE_ALGORITHM == 3

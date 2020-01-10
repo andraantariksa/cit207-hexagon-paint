@@ -4,6 +4,7 @@
 #define PI 3.14159265
 #include <cmath>
 
+// 0. Naive    // Have a problem for x1 == x2 and dx < dy is not really nice
 // 1. EQUATION // TODO
 // 2. DDA
 // 3. MID      // TODO
