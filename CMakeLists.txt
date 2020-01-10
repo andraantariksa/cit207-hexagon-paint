@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 include(FetchContent)
 
-project(2DComputerGraphics)
+project(2DComputerGraphicsAndAnimation)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
@@ -24,11 +24,11 @@ set(SOURCE
     "src/main.cpp"
 )
 
-add_executable(2DComputerGraphicsApp
+add_executable(2DComputerGraphicsAndAnimationApp
     "${SOURCE}"
 )
 
-target_link_libraries(2DComputerGraphicsApp
+target_link_libraries(2DComputerGraphicsAndAnimationApp
     PRIVATE
         "sfml-audio"
         "sfml-graphics"

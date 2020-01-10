@@ -123,8 +123,11 @@ class Application
 
             // End canvas draw
 
-            this->canvas->update(); // Shouldn't be call this, it should be done automatically
-                                    // when the canvas was drawn
+            // TODO
+            // Shouldn't be call this, it should be done automatically
+            // when the canvas was drawn
+            this->canvas->update();
+
             this->window->draw(*(this->canvas));
             this->window->draw(fps);
             this->window->display();
