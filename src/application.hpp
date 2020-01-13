@@ -70,7 +70,7 @@ class Application
             shapes.push_back(&leftdown);
 
             shape::Line right = shape::Line::from(400, 400)
-                .to(500, 401)
+                .to(500, 400)
                 .build();
             shapes.push_back(&right);
 

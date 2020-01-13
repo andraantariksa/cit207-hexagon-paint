@@ -28,9 +28,9 @@ namespace shape
             }
 
             double y;
-            double dx = (double) ((int) x2 - (int) x1);
-            double dy = (double) ((int) y2 - (int) y1);
-            double gradient = dx / dy;
+            double delta_x = (double) ((int) x2 - (int) x1);
+            double delta_y = (double) ((int) y2 - (int) y1);
+            double gradient = delta_y / delta_x;
 
             for (std::size_t x = x1; x <= x2; x++)
             {
