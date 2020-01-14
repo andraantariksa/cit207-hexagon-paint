@@ -5,6 +5,8 @@
 #include <cmath>
 #include <cstdio>
 #include <vector>
+#include <cmath>
+#include <cstring>
 
 #include "color.hpp"
 
@@ -35,6 +37,16 @@ class Canvas: public sf::Drawable
         this->sprite.setTexture(this->texture);
     }
 
+    inline void setPosition(float x, float y)
+    {
+        this->sprite.setPosition(sf::Vector2f(x, y));
+    }
+
+    inline sf::Vector2f getPosition()
+    {
+        return this->sprite.getPosition();
+    }
+
     ~Canvas()
     {
         delete pixels;
@@ -52,6 +64,11 @@ class Canvas: public sf::Drawable
     void update()
     {
         this->texture.update(this->pixels);
+    }
+
+    void clear()
+    {
+        std::memset(this->pixels, 255, this->window_width * this->window_height * 4);
     }
 
     void drawShapes(std::vector<CanvasDrawable*> canvas_drawables)

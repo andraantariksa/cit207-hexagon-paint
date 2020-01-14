@@ -33,7 +33,7 @@ class FPS: public sf::Drawable
 
         // Convert to C string
         char frame_per_second_string[10];
-        std::sprintf(frame_per_second_string, "%d", (int) current_frame_per_second);
+        std::sprintf(frame_per_second_string, "FPS: %d", (int) current_frame_per_second);
 
         sf::Text frame_per_second_text(sf::String(frame_per_second_string),
             this->frame_per_second_font, this->character_size);

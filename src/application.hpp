@@ -1,10 +1,13 @@
 #pragma once
 
+#include <imgui.h>
+#include <imgui-SFML.h>
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 
 #include <cstdio>
 #include <vector>
+#include <cstdio>
 
 #include "fps.hpp"
 #include "canvas.hpp"
@@ -23,18 +26,27 @@ class Application
     {
         this->window = new sf::RenderWindow(sf::VideoMode(window_width, window_height, 32),
             title);
-        this->canvas = new Canvas(window_width, window_height);
         // 100 FPS should be enough
         this->window->setFramerateLimit(100);
+        ImGui::SFML::Init(*(this->window));
     }
 
     ~Application()
     {
+        ImGui::SFML::Shutdown();
+        delete this->canvas;
         delete this->window;
     }
 
     void dispatch()
     {
+        this->canvas = new Canvas(800, this->window->getSize().y);
+        this->canvas->setPosition(200, 0);
+
+        std::size_t move_x = 0;
+        std::size_t move_y = 0;
+
+        sf::Clock delta_clock;
         while (this->window->isOpen())
         {
             fps.start();
@@ -43,13 +55,79 @@ class Application
 
             while (this->window->pollEvent(event))
             {
+                ImGui::SFML::ProcessEvent(event);
+
                 if (event.type == sf::Event::Closed)
                 {
                     window->close();
                 }
+
+                if (event.key.code == sf::Keyboard::Right) {
+                    move_x += 10;
+                }
+
+                if (event.key.code == sf::Keyboard::Left) {
+                    move_x -= 10;
+                }
+
+                if (event.key.code == sf::Keyboard::Up) {
+                    move_y -= 10;
+                }
+
+                if (event.key.code == sf::Keyboard::Down) {
+                    move_y += 10;
+                }
             }
 
             this->window->clear();
+
+            ImGui::SFML::Update(*(this->window), delta_clock.restart());
+
+            float main_menu_bar_height;
+            // Main menu
+            if (ImGui::BeginMainMenuBar())
+            {
+                main_menu_bar_height = ImGui::GetWindowHeight();
+                if (ImGui::BeginMenu("File"))
+                {
+                    if (ImGui::MenuItem("Open..", "Ctrl+O"))
+                    {
+                    }
+                    if (ImGui::MenuItem("Save", "Ctrl+S"))
+                    {
+                    }
+                    if (ImGui::MenuItem("Close", "Ctrl+W"))
+                    {
+                        this->window->close();
+                    }
+                    ImGui::EndMenu();
+                }
+            }
+            ImGui::EndMainMenuBar();
+            // End main menu
+
+            ImGui::SetNextWindowPos(ImVec2(0, main_menu_bar_height));
+            if (ImGui::Begin("Toolbox", NULL, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse))
+            {
+                if (ImGui::BeginTabBar("#tab_toolbox"))
+                {
+                    if (ImGui::BeginTabItem("Shape"))
+                    {
+                        ImGui::Button("Test");
+                    }
+                    ImGui::EndTabItem();
+                }
+                ImGui::EndTabBar();
+                if (ImGui::CollapsingHeader("Color", ImGuiTreeNodeFlags_DefaultOpen))
+                {
+                    float rgba[3];
+                    ImGui::ColorEdit3("Color", rgba);
+                }
+            }
+            ImGui::End();
+
+
+            this->canvas->clear();
             
             // Begin canvas draw
             
@@ -95,25 +173,25 @@ class Application
             shapes.push_back(&left);
 
             // Begin assignment box with dot in the center
-            this->canvas->setPixel(75, 75, Color::Red());
+            this->canvas->setPixel(75 + move_x, 75 + move_y, Color::Red());
 
-            shape::Line line_right = shape::Line::from(100, 50)
-                .to(100, 100)
+            shape::Line line_right = shape::Line::from(100 + move_x, 50 + move_y)
+                .to(100 + move_x, 100 + move_y)
                 .build();
             shapes.push_back(&line_right);
 
-            shape::Line line_left = shape::Line::from(50, 100)
-                .to(50, 50)
+            shape::Line line_left = shape::Line::from(50 + move_x, 100 + move_y)
+                .to(50 + move_x, 50 + move_y)
                 .build();
             shapes.push_back(&line_left);
             
-            shape::Line line_bottom = shape::Line::from(50, 100)
-                .to(100, 100)
+            shape::Line line_bottom = shape::Line::from(50 + move_x, 100 + move_y)
+                .to(100 + move_x, 100 + move_y)
                 .build();
             shapes.push_back(&line_bottom);
 
-            shape::Line line_top = shape::Line::from(50, 50)
-                .to(100, 50)
+            shape::Line line_top = shape::Line::from(50 + move_x, 50 + move_y)
+                .to(100 + move_x, 50 + move_y)
                 .build();
             shapes.push_back(&line_top);
 
@@ -130,6 +208,8 @@ class Application
 
             this->window->draw(*(this->canvas));
             this->window->draw(fps);
+
+            ImGui::SFML::Render(*(this->window));
             this->window->display();
         }
     }

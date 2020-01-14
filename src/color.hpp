@@ -46,19 +46,25 @@ class Color
 
     static inline Color Red()
     {
-        Color color(225, 0, 0, 225);
+        Color color(255, 0, 0, 255);
         return color;
     }
 
     static inline Color Green()
     {
-        Color color(0, 225, 0, 225);
+        Color color(0, 255, 0, 255);
         return color;
     }
 
     static inline Color Blue()
     {
-        Color color(0, 0, 225, 225);
+        Color color(0, 0, 255, 255);
+        return color;
+    }
+
+    static inline Color Black()
+    {
+        Color color(255, 255, 255, 255);
         return color;
     }
 };
