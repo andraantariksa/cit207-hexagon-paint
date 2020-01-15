@@ -4,18 +4,19 @@ This repository is intended for my Computer Graphics and Animation course
 
 ## Prerequisites
 
-- Makefile
-- CMake <= 3.10
+- CMake >= 3.10
 - C++17 supported compiler
 
-## Getting Started
+## Installation
 
-To build and run this project, you can run the command below
+- Clone to local
+- Pull the dependencies
 
 ```
-make
-./build/2DComputerGraphicsAndAnimationApp
+git submodule update --recursive --remote
 ```
+
+- Rename the `lib/lodepng/lodepng.cpp` to `lib/lodepng/lodepng.c`
 
 ## License
 

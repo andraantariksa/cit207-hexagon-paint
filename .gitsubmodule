@@ -1,0 +1,11 @@
+[submodule "tinyfiledialogs"]
+	path = lib/tinyfiledialogs
+	url = https://github.com/native-toolkit/tinyfiledialogs
+
+[submodule "lodepng"]
+	path = lib/lodepng
+	url = https://github.com/lvandeve/lodepng
+
+[submodule "stb"]
+	path = lib/stb
+	url = https://github.com/nothings/stb
