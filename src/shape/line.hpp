@@ -27,37 +27,37 @@ namespace shape
                 std::swap(y1, y2);
             }
 
-            double y;
-            double delta_x = (double) ((int) x2 - (int) x1);
-            double delta_y = (double) ((int) y2 - (int) y1);
-            double gradient = delta_y / delta_x;
+            float y;
+            float delta_x = (float) ((int) x2 - (int) x1);
+            float delta_y = (float) ((int) y2 - (int) y1);
+            float gradient = delta_y / delta_x;
 
             for (std::size_t x = x1; x <= x2; x++)
             {
-                y = (double) y1 + (gradient * (double) ((int) x - (int) x1));
+                y = (float) y1 + (gradient * (float) ((int) x - (int) x1));
                 canvas->setPixel(x, (std::size_t) std::round(y), this->color);
             }
 
             #elif _LINE_ALGORITHM == 1
 
             // Have a problem when delta_x < delta_y
-            double delta_y = (double)(y2 - y1);
-            double delta_x = (double)(x2 - x1);
-            double gradient = delta_y / delta_x;
+            float delta_y = (float)(y2 - y1);
+            float delta_x = (float)(x2 - x1);
+            float gradient = delta_y / delta_x;
 
-            double c = (double) y1 - gradient * (double) x1;
+            float c = (float) y1 - gradient * (float) x1;
             
             for (size_t x = x1; x <= x2; x++)
             {
-                double y = gradient * (double) x + c;
+                float y = gradient * (float) x + c;
                 canvas->setPixel(x, (size_t) std::round(y), this->color);
             }
 
             #elif _LINE_ALGORITHM == 2
 
             std::size_t step;
-            double delta_y = (double) ((int) y2 - (int) y1);
-            double delta_x = (double) ((int) x2 - (int) x1);
+            float delta_y = (float) ((int) y2 - (int) y1);
+            float delta_x = (float) ((int) x2 - (int) x1);
 
             if (std::abs(delta_x) >= std::abs(delta_y))
             {
@@ -68,14 +68,14 @@ namespace shape
                 step = (std::size_t) std::abs(delta_y);
             }
 
-            delta_x = delta_x / (double) step;
-            delta_y = delta_y / (double) step;
-            std::size_t x = x1;
-            std::size_t y = y1;
+            delta_x = delta_x / (float) step;
+            delta_y = delta_y / (float) step;
+            float x = x1;
+            float y = y1;
 
             for (std::size_t i = 0; i <= step; ++i)
             {
-                canvas->setPixel(x, y, this->color);
+                canvas->setPixel((std::size_t) std::round(x), (std::size_t) std::round(y), this->color);
                 x = x + delta_x;
                 y = y + delta_y;
             }
@@ -161,11 +161,11 @@ namespace shape
             return line_builder;
         }
 
-        static double slope(std::size_t x1, std::size_t y1, std::size_t x2, std::size_t y2)
+        static float slope(std::size_t x1, std::size_t y1, std::size_t x2, std::size_t y2)
         {
-            double delta_y = (double)(y2 - y1);
-            double delta_x = (double)(x2 - x1);
-            double gradient = delta_y / delta_x;
+            float delta_y = (float)(y2 - y1);
+            float delta_x = (float)(x2 - x1);
+            float gradient = delta_y / delta_x;
             return std::atan(gradient);
         }
     };
