@@ -10,6 +10,10 @@
 
 #include "color.hpp"
 
+#include "../lib/lodepng/lodepng.h"
+// Set it up manually by renaming the lodepng.cpp to lodepng.c
+#include "../lib/lodepng/lodepng.c"
+
 class Canvas;
 
 class CanvasDrawable
@@ -24,18 +28,40 @@ class Canvas: public sf::Drawable
     sf::Texture texture;
     sf::Sprite sprite;
     sf::Uint8 *pixels;
-    unsigned int window_width;
-    unsigned int window_height;
+    unsigned int width;
+    unsigned int height;
 
     public:
-    Canvas(const unsigned int window_width, const unsigned int window_height)
+    Canvas(const unsigned int width, const unsigned int height)
     {
-        this->window_width = window_width;
-        this->window_height = window_height;
-        this->pixels = new sf::Uint8[this->window_width * this->window_height * 4];
-        this->texture.create(this->window_width, this->window_height);
+        this->width = width;
+        this->height = height;
+        this->pixels = new sf::Uint8[this->width * this->height * 4];
+        this->texture.create(this->width, this->height);
         this->sprite.setTexture(this->texture);
+        this->clear();
     }
+
+    unsigned int getWidth() const
+    {
+        return this->width;
+    }
+    unsigned int getHeight() const
+    {
+        return this->height;
+    }
+
+    inline bool save(const char* const file_name)
+    {
+        return (bool) lodepng_encode32_file(file_name, this->pixels, this->width, this->height);
+    }
+
+    inline bool load(const char* const file_name)
+    {
+        unsigned int _width, _height;
+        return (bool) lodepng_decode32_file(&this->pixels, &_width, &_height, file_name);
+    }
+
 
     inline void setPosition(float x, float y)
     {
@@ -54,7 +80,7 @@ class Canvas: public sf::Drawable
 
     inline void setPixel(size_t x, size_t y, Color color)
     {
-        const size_t current_pixel_pos = (x + (y * this->window_width)) * 4;
+        const size_t current_pixel_pos = (x + (y * this->width)) * 4;
         this->pixels[current_pixel_pos] = color.getRed();
         this->pixels[current_pixel_pos + 1] = color.getGreen();
         this->pixels[current_pixel_pos + 2] = color.getBlue();
@@ -68,7 +94,7 @@ class Canvas: public sf::Drawable
 
     void clear()
     {
-        std::memset(this->pixels, 255, this->window_width * this->window_height * 4);
+        std::memset(this->pixels, 255, this->width * this->height * 4);
     }
 
     void drawShapes(std::vector<CanvasDrawable*> canvas_drawables)
@@ -78,6 +104,11 @@ class Canvas: public sf::Drawable
         {
             (*it)->draw(this);
         }
+    }
+
+    inline void drawShape(CanvasDrawable* canvas_drawable)
+    {
+        canvas_drawable->draw(this);
     }
 
     void draw(sf::RenderTarget& target, sf::RenderStates states) const

@@ -37,6 +37,7 @@ class FPS: public sf::Drawable
 
         sf::Text frame_per_second_text(sf::String(frame_per_second_string),
             this->frame_per_second_font, this->character_size);
+        frame_per_second_text.setPosition(sf::Vector2f(0, 500));
         target.draw(frame_per_second_text);
     }
 };
