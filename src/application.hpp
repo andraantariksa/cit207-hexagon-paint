@@ -38,6 +38,11 @@ public:
     {
         this->window = new sf::RenderWindow(sf::VideoMode(window_width, window_height, 32),
             title);
+
+        sf::Image window_icon;
+        window_icon.loadFromFile("../assets/icon-32x32.png");
+        this->window->setIcon(32, 32, window_icon.getPixelsPtr());
+
         // 100 FPS should be enough
         this->window->setFramerateLimit(60);
         this->state = State::Nothing;
@@ -60,6 +65,8 @@ public:
 
         sf::Clock delta_clock;
         sf::Event event{};
+        bool line_is_dotted = false;
+        int line_width_size = 1;
         float chosen_rgb_color[3] = {0, 0, 0};
         float main_menu_bar_height = 0;
 
@@ -116,13 +123,21 @@ public:
                         else if (this->state == State::LineTo)
                         {
                             this->canvas->alternateEnd();
-                            shape::Line line_from_to_mouse_position = shape::Line::from(x1, y1)
+                            auto line_pending = shape::Line::from(x1, y1)
                                 .to(mouse_position.x - 200, mouse_position.y)
-                                .withColor(chosen_color)
-                                .build();
-                            this->canvas->drawShape(
-                                &line_from_to_mouse_position
-                            );
+                                .withColor(chosen_color);
+
+                            if (line_is_dotted)
+                            {
+                                shape::Line line_from_to_mouse_position = line_pending.isDotted(true).build();
+                                this->canvas->drawShape(&line_from_to_mouse_position);
+                            }
+                            else
+                            {
+                                shape::Line line_from_to_mouse_position = line_pending.build();
+                                this->canvas->drawShape(&line_from_to_mouse_position);
+                            }
+
                             this->state = State::LineDone;
                         }
                     }
@@ -208,6 +223,19 @@ public:
                     ImGui::EndTabItem();
                 }
                 ImGui::EndTabBar();
+
+                if (this->state == State::LineFrom || this->state == State::LineTo)
+                {
+                    if (ImGui::CollapsingHeader("Line Options", ImGuiTreeNodeFlags_DefaultOpen))
+                    {
+                        ImGui::Checkbox("Dotted", &line_is_dotted);
+
+                        ImGui::SameLine();
+
+                        ImGui::DragInt("Width", &line_width_size, 1.0, 1, 5, "%d px");
+                    }
+                }
+
                 if (ImGui::CollapsingHeader("Color", ImGuiTreeNodeFlags_DefaultOpen))
                 {
                     ImGui::ColorEdit3("Color", chosen_rgb_color);
@@ -228,13 +256,20 @@ public:
             {
                 if (this->state == State::LineTo)
                 {
-                    shape::Line line_from_to_mouse_position = shape::Line::from(x1, y1)
+                    auto line_pending = shape::Line::from(x1, y1)
                         .to(mouse_position.x - 200, mouse_position.y)
-                        .withColor(chosen_color)
-                        .build();
-                    this->canvas->drawShape(
-                        &line_from_to_mouse_position
-                    );
+                        .withColor(chosen_color);
+
+                    if (line_is_dotted)
+                    {
+                        shape::Line line_from_to_mouse_position = line_pending.isDotted(true).build();
+                        this->canvas->drawShape(&line_from_to_mouse_position);
+                    }
+                    else
+                    {
+                        shape::Line line_from_to_mouse_position = line_pending.build();
+                        this->canvas->drawShape(&line_from_to_mouse_position);
+                    }
                 }
             }
 

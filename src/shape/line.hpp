@@ -16,47 +16,12 @@ namespace shape
         std::size_t y1;
         std::size_t x2;
         std::size_t y2;
+        bool is_dotted;
 
         void draw(Canvas* canvas)
         {
             if (!canvas->isAlternateOn())
             {
-#if _LINE_ALGORITHM == 0
-
-                if (x2 < x1)
-                {
-                    std::swap(x1, x2);
-                    std::swap(y1, y2);
-                }
-
-                float y;
-                float delta_x = (float) ((int) x2 - (int) x1);
-                float delta_y = (float) ((int) y2 - (int) y1);
-                float gradient = delta_y / delta_x;
-
-                for (std::size_t x = x1; x <= x2; x++)
-                {
-                    y = (float) y1 + (gradient * (float) ((int) x - (int) x1));
-                    canvas->setPixel(x, (std::size_t) std::round(y), this->color);
-                }
-
-#elif _LINE_ALGORITHM == 1
-
-                // Have a problem when delta_x < delta_y
-                float delta_y = (float)(y2 - y1);
-                float delta_x = (float)(x2 - x1);
-                float gradient = delta_y / delta_x;
-
-                float c = (float) y1 - gradient * (float) x1;
-
-                for (size_t x = x1; x <= x2; x++)
-                {
-                    float y = gradient * (float) x + c;
-                    canvas->setPixel(x, (size_t) std::round(y), this->color);
-                }
-
-#elif _LINE_ALGORITHM == 2
-
                 std::size_t step;
                 float delta_y = (float) ((int) y2 - (int) y1);
                 float delta_x = (float) ((int) x2 - (int) x1);
@@ -77,70 +42,17 @@ namespace shape
 
                 for (std::size_t i = 0; i <= step; ++i)
                 {
-                    canvas->setPixel((std::size_t) std::round(x), (std::size_t) std::round(y), this->color);
+                    std::printf("%d\n", this->is_dotted);
+                    if ((this->is_dotted && i % 9 < 4) || !this->is_dotted)
+                    {
+                        canvas->setPixel((std::size_t) std::round(x), (std::size_t) std::round(y), this->color);
+                    }
                     x = x + delta_x;
                     y = y + delta_y;
                 }
-
-#elif _LINE_ALGORITHM == 3
-
-                size_t delta_y = y2 - y1;
-                size_t delta_x = x2 - x1;
-
-                size_t D = 2 * delta_y - delta_x;
-                size_t y = y1;
-
-                for (size_t x = x1; x <= x2; x++)
-                {
-                    this->setPixel(x, y, color);
-                    if (D > 0)
-                    {
-                        y += 1;
-                        D = D - 2 * delta_x;
-                    }
-                    D = D + 2 * delta_y;
-                }
-
-#endif
             }
             else
             {
-#if _LINE_ALGORITHM == 0
-
-                if (x2 < x1)
-                {
-                    std::swap(x1, x2);
-                    std::swap(y1, y2);
-                }
-
-                float y;
-                float delta_x = (float) ((int) x2 - (int) x1);
-                float delta_y = (float) ((int) y2 - (int) y1);
-                float gradient = delta_y / delta_x;
-
-                for (std::size_t x = x1; x <= x2; x++)
-                {
-                    y = (float) y1 + (gradient * (float) ((int) x - (int) x1));
-                    canvas->setPixel(x, (std::size_t) std::round(y), this->color);
-                }
-
-#elif _LINE_ALGORITHM == 1
-
-                // Have a problem when delta_x < delta_y
-                float delta_y = (float)(y2 - y1);
-                float delta_x = (float)(x2 - x1);
-                float gradient = delta_y / delta_x;
-
-                float c = (float) y1 - gradient * (float) x1;
-
-                for (size_t x = x1; x <= x2; x++)
-                {
-                    float y = gradient * (float) x + c;
-                    canvas->setPixel(x, (size_t) std::round(y), this->color);
-                }
-
-#elif _LINE_ALGORITHM == 2
-
                 std::size_t step;
                 float delta_y = (float) ((int) y2 - (int) y1);
                 float delta_x = (float) ((int) x2 - (int) x1);
@@ -161,31 +73,13 @@ namespace shape
 
                 for (std::size_t i = 0; i <= step; ++i)
                 {
-                    canvas->alternateSetPixel((std::size_t) std::round(x), (std::size_t) std::round(y), this->color);
+                    if ((this->is_dotted && i % 9 < 4) || !this->is_dotted)
+                    {
+                        canvas->alternateSetPixel((std::size_t) std::round(x), (std::size_t) std::round(y), this->color);
+                    }
                     x = x + delta_x;
                     y = y + delta_y;
                 }
-
-#elif _LINE_ALGORITHM == 3
-
-                size_t delta_y = y2 - y1;
-                size_t delta_x = x2 - x1;
-
-                size_t D = 2 * delta_y - delta_x;
-                size_t y = y1;
-
-                for (size_t x = x1; x <= x2; x++)
-                {
-                    this->setPixel(x, y, color);
-                    if (D > 0)
-                    {
-                        y += 1;
-                        D = D - 2 * delta_x;
-                    }
-                    D = D + 2 * delta_y;
-                }
-
-#endif
             }
         }
 
@@ -197,10 +91,12 @@ namespace shape
             std::size_t y1;
             std::size_t x2;
             std::size_t y2;
+            bool is_dotted;
 
             public:
             LineBuilder()
             {
+                this->is_dotted = false;
                 this->color = Color::Red();
             }
 
@@ -224,21 +120,28 @@ namespace shape
                 return *this;
             }
 
+            LineBuilder isDotted(bool is_dotted)
+            {
+                this->is_dotted = is_dotted;
+                return *this;
+            }
+
             Line build()
             {
-                Line line(this->x1, this->y1, this->x2, this->y2, this->color);
+                Line line(this->x1, this->y1, this->x2, this->y2, this->color, this->is_dotted);
                 return line;
             }
         };
 
         public:
-        Line(std::size_t x1, std::size_t y1, std::size_t x2, std::size_t y2, Color color = Color::Red())
+        Line(std::size_t x1, std::size_t y1, std::size_t x2, std::size_t y2, Color color = Color::Red(), bool is_dotted = false)
         {
             this->x1 = x1;
             this->y1 = y1;
             this->x2 = x2;
             this->y2 = y2;
             this->color = color;
+            this->is_dotted = is_dotted;
         }
 
         static LineBuilder from(std::size_t x1, std::size_t y1)
