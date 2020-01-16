@@ -16,6 +16,14 @@ class Color
         this->blue = 0;
     }
 
+    Color(float rgb[3])
+    {
+        this->red = rgb[0] * 255.0;
+        this->green = rgb[1] * 255.0;
+        this->blue = rgb[2] * 255.0;
+        this->alpha = 255;
+    }
+
     Color(sf::Uint8 red, sf::Uint8 green, sf::Uint8 blue, sf::Uint8 alpha)
     {
         this->red = red;

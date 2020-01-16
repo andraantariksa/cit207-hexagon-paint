@@ -14,7 +14,7 @@
 
 int main(int argc, char *argv[])
 {
-    Application app(1000, 600, sf::String("2D Computer Graphics and Animation"));
+    Application app(1000, 600, sf::String("Hexagon Paint"));
     app.dispatch();
     return 0;
 }

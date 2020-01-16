@@ -7,6 +7,7 @@
 #include <vector>
 #include <cmath>
 #include <cstring>
+#include <algorithm>
 
 #include "color.hpp"
 
@@ -28,14 +29,20 @@ class Canvas: public sf::Drawable
     sf::Texture texture;
     sf::Sprite sprite;
     sf::Uint8 *pixels;
+    sf::Uint8 *pixels_alternate;
+    sf::Vector2f position;
     unsigned int width;
     unsigned int height;
+    bool is_alternate_on;
 
     public:
-    Canvas(const unsigned int width, const unsigned int height)
+    Canvas(const unsigned int width, const unsigned int height, sf::Vector2f position = sf::Vector2f(0.0f, 0.0f))
     {
+        this->is_alternate_on = false;
         this->width = width;
         this->height = height;
+        this->position = position;
+        this->sprite.setPosition(position);
         this->pixels = new sf::Uint8[this->width * this->height * 4];
         this->texture.create(this->width, this->height);
         this->sprite.setTexture(this->texture);
@@ -46,9 +53,47 @@ class Canvas: public sf::Drawable
     {
         return this->width;
     }
-    unsigned int getHeight() const
+
+    inline unsigned int getHeight() const
     {
         return this->height;
+    }
+
+    inline bool isAlternateOn()
+    {
+        return this->is_alternate_on;
+    }
+
+    inline void alternateBegin()
+    {
+        this->is_alternate_on = true;
+        this->pixels_alternate = new sf::Uint8[this->width * this->height * 4];
+        std::copy(this->pixels, this->pixels + (this->width * this->height * 4), this->pixels_alternate);
+    }
+
+    inline void alternateFromMain()
+    {
+        std::copy(this->pixels, this->pixels + (this->width * this->height * 4), this->pixels_alternate);
+    }
+
+    inline void alternateEnd()
+    {
+        this->is_alternate_on = false;
+        delete this->pixels_alternate;
+    }
+
+    inline void alternateSetPixel(size_t x, size_t y, Color color)
+    {
+        const size_t current_pixel_pos = (x + (y * this->width)) * 4;
+        this->pixels_alternate[current_pixel_pos] = color.getRed();
+        this->pixels_alternate[current_pixel_pos + 1] = color.getGreen();
+        this->pixels_alternate[current_pixel_pos + 2] = color.getBlue();
+        this->pixels_alternate[current_pixel_pos + 3] = color.getAlpha();
+    }
+
+    inline void alternateUpdate()
+    {
+        this->texture.update(this->pixels_alternate);
     }
 
     inline bool save(const char* const file_name)
@@ -63,9 +108,10 @@ class Canvas: public sf::Drawable
     }
 
 
-    inline void setPosition(float x, float y)
+    inline void setPosition(sf::Vector2f position)
     {
-        this->sprite.setPosition(sf::Vector2f(x, y));
+        this->position = position;
+        this->sprite.setPosition(position);
     }
 
     inline sf::Vector2f getPosition()

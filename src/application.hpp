@@ -19,10 +19,11 @@ class Application
 private:
     enum class State
     {
-        LINE_CHOOSEN,
-        LINE_FROM,
-        LINE_TO,
-        LINE_DONE,
+        Nothing,
+        LineFrom,
+        LineTo,
+        LineDone,
+        PenDraw,
     };
 
     sf::RenderWindow* window;
@@ -39,7 +40,9 @@ public:
             title);
         // 100 FPS should be enough
         this->window->setFramerateLimit(60);
+        this->state = State::Nothing;
         ImGui::SFML::Init(*(this->window));
+        ImGui::GetIO().IniFilename = nullptr;
     }
 
     ~Application()
@@ -51,15 +54,31 @@ public:
 
     void dispatch()
     {
-        sf::Event event{};
 
         this->canvas = new Canvas(800, this->window->getSize().y);
-        this->canvas->setPosition(200, 0);
+        this->canvas->setPosition(sf::Vector2f(200, 0));
 
         sf::Clock delta_clock;
+        sf::Event event{};
+        float chosen_rgb_color[3] = {0, 0, 0};
+        float main_menu_bar_height = 0;
+
+        int my_image_width = 0;
+        int my_image_height = 0;
+        GLuint texture_icon_line = 0;
+        GLuint texture_icon_pen = 0;
+        LoadTextureFromFile("../assets/line.png", &texture_icon_line, &my_image_width, &my_image_height);
+        LoadTextureFromFile("../assets/pen.png", &texture_icon_pen, &my_image_width, &my_image_height);
+
+        int x1, y1, x2, y2;
+
         while (this->window->isOpen())
         {
+            sf::Vector2i mouse_position = sf::Mouse::getPosition(*this->window);
+            Color chosen_color(chosen_rgb_color);
+
             fps.start();
+            this->window->clear();
 
             while (this->window->pollEvent(event))
             {
@@ -69,13 +88,54 @@ public:
                 {
                     window->close();
                 }
+
+                if (event.type == sf::Event::LostFocus)
+                {
+                    break;
+                }
+
+                if (mouse_position.x >= 200 && mouse_position.x <= 200 + this->canvas->getWidth()
+                    && mouse_position.y >= 0 && mouse_position.y <= 0 + this->canvas->getHeight())
+                {
+                    if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
+                    {
+                        if (this->state == State::PenDraw)
+                        {
+                            this->canvas->setPixel(mouse_position.x - 200, mouse_position.y, chosen_color);
+                        }
+                    }
+                    
+                    if (event.type == sf::Event::MouseButtonPressed)
+                    {
+                        if (this->state == State::LineFrom)
+                        {
+                            x1 = mouse_position.x - 200;
+                            y1 = mouse_position.y;
+                            this->state = State::LineTo;
+                        }
+                        else if (this->state == State::LineTo)
+                        {
+                            this->canvas->alternateEnd();
+                            shape::Line line_from_to_mouse_position = shape::Line::from(x1, y1)
+                                .to(mouse_position.x - 200, mouse_position.y)
+                                .withColor(chosen_color)
+                                .build();
+                            this->canvas->drawShape(
+                                &line_from_to_mouse_position
+                            );
+                            this->state = State::LineDone;
+                        }
+                    }
+                }
             }
 
-            this->window->clear();
+            if (this->canvas->isAlternateOn())
+            {
+                this->canvas->alternateFromMain();
+            }
 
-            ImGui::SFML::Update(*(this->window), delta_clock.restart());
+            ImGui::SFML::Update(*this->window, delta_clock.restart());
 
-            float main_menu_bar_height = 0;
             // Main menu
             if (ImGui::BeginMainMenuBar())
             {
@@ -118,6 +178,7 @@ public:
             // End main menu
 
             ImGui::SetNextWindowPos(ImVec2(0, main_menu_bar_height));
+            ImGui::SetNextWindowSize(ImVec2(200, 300));
             if (ImGui::Begin("Toolbox", nullptr,
                 ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize))
             {
@@ -125,23 +186,57 @@ public:
                 {
                     if (ImGui::BeginTabItem("Shape"))
                     {
-                        int my_image_width = 0;
-                        int my_image_height = 0;
-                        GLuint my_image_texture = 0;
-                        bool ret = LoadTextureFromFile("../assets/line.png", &my_image_texture, &my_image_width, &my_image_height);
-                        ImGui::Image((uintptr_t)my_image_texture, ImVec2(32, 32));
-                        ImGui::Button("Test");
+                        // Pen
+                        if (ImGui::ImageButton(texture_icon_pen, ImVec2(32, 32)))
+                        {
+                            this->state = State::PenDraw;
+                        }
+                        if (ImGui::IsItemHovered())
+                            ImGui::SetTooltip("Pen");
+
+                        ImGui::SameLine();
+
+                        // Line
+                        if (ImGui::ImageButton(texture_icon_line, ImVec2(32, 32)))
+                        {
+                            this->canvas->alternateBegin();
+                            this->state = State::LineFrom;
+                        }
+                        if (ImGui::IsItemHovered())
+                            ImGui::SetTooltip("Line shape");
                     }
                     ImGui::EndTabItem();
                 }
                 ImGui::EndTabBar();
                 if (ImGui::CollapsingHeader("Color", ImGuiTreeNodeFlags_DefaultOpen))
                 {
-                    float rgba[3];
-                    ImGui::ColorEdit3("Color", rgba);
+                    ImGui::ColorEdit3("Color", chosen_rgb_color);
+                }
+                if (ImGui::CollapsingHeader("Layer Tools", ImGuiTreeNodeFlags_DefaultOpen))
+                {
+                    if (ImGui::Button("Clear"))
+                    {
+                        this->canvas->clear();
+                    }
                 }
             }
             ImGui::End();
+
+
+            if (mouse_position.x >= 200 && mouse_position.x <= 200 + this->canvas->getWidth()
+                && mouse_position.y >= 0 && mouse_position.y <= this->canvas->getHeight())
+            {
+                if (this->state == State::LineTo)
+                {
+                    shape::Line line_from_to_mouse_position = shape::Line::from(x1, y1)
+                        .to(mouse_position.x - 200, mouse_position.y)
+                        .withColor(chosen_color)
+                        .build();
+                    this->canvas->drawShape(
+                        &line_from_to_mouse_position
+                    );
+                }
+            }
 
             // Begin canvas draw
 
@@ -152,15 +247,19 @@ public:
 
             // End canvas draw
 
-            // TODO
-            // Shouldn't be call this, it should be done automatically
-            // when the canvas was drawn
-            this->canvas->update();
+            if (this->canvas->isAlternateOn())
+            {
+                this->canvas->alternateUpdate();
+            }
+            else
+            {
+                this->canvas->update();
+            }
 
-            this->window->draw(*(this->canvas));
+            this->window->draw(*this->canvas);
             this->window->draw(fps);
 
-            ImGui::SFML::Render(*(this->window));
+            ImGui::SFML::Render(*this->window);
             this->window->display();
         }
     }

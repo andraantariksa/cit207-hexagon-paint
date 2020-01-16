@@ -19,87 +19,174 @@ namespace shape
 
         void draw(Canvas* canvas)
         {
-            #if _LINE_ALGORITHM == 0
-
-            if (x2 < x1)
+            if (!canvas->isAlternateOn())
             {
-                std::swap(x1, x2);
-                std::swap(y1, y2);
-            }
+#if _LINE_ALGORITHM == 0
 
-            float y;
-            float delta_x = (float) ((int) x2 - (int) x1);
-            float delta_y = (float) ((int) y2 - (int) y1);
-            float gradient = delta_y / delta_x;
+                if (x2 < x1)
+                {
+                    std::swap(x1, x2);
+                    std::swap(y1, y2);
+                }
 
-            for (std::size_t x = x1; x <= x2; x++)
-            {
-                y = (float) y1 + (gradient * (float) ((int) x - (int) x1));
-                canvas->setPixel(x, (std::size_t) std::round(y), this->color);
-            }
+                float y;
+                float delta_x = (float) ((int) x2 - (int) x1);
+                float delta_y = (float) ((int) y2 - (int) y1);
+                float gradient = delta_y / delta_x;
 
-            #elif _LINE_ALGORITHM == 1
+                for (std::size_t x = x1; x <= x2; x++)
+                {
+                    y = (float) y1 + (gradient * (float) ((int) x - (int) x1));
+                    canvas->setPixel(x, (std::size_t) std::round(y), this->color);
+                }
 
-            // Have a problem when delta_x < delta_y
-            float delta_y = (float)(y2 - y1);
-            float delta_x = (float)(x2 - x1);
-            float gradient = delta_y / delta_x;
+#elif _LINE_ALGORITHM == 1
 
-            float c = (float) y1 - gradient * (float) x1;
-            
-            for (size_t x = x1; x <= x2; x++)
-            {
-                float y = gradient * (float) x + c;
-                canvas->setPixel(x, (size_t) std::round(y), this->color);
-            }
+                // Have a problem when delta_x < delta_y
+                float delta_y = (float)(y2 - y1);
+                float delta_x = (float)(x2 - x1);
+                float gradient = delta_y / delta_x;
 
-            #elif _LINE_ALGORITHM == 2
+                float c = (float) y1 - gradient * (float) x1;
 
-            std::size_t step;
-            float delta_y = (float) ((int) y2 - (int) y1);
-            float delta_x = (float) ((int) x2 - (int) x1);
+                for (size_t x = x1; x <= x2; x++)
+                {
+                    float y = gradient * (float) x + c;
+                    canvas->setPixel(x, (size_t) std::round(y), this->color);
+                }
 
-            if (std::abs(delta_x) >= std::abs(delta_y))
-            {
-                step = (std::size_t) std::abs(delta_x);
+#elif _LINE_ALGORITHM == 2
+
+                std::size_t step;
+                float delta_y = (float) ((int) y2 - (int) y1);
+                float delta_x = (float) ((int) x2 - (int) x1);
+
+                if (std::abs(delta_x) >= std::abs(delta_y))
+                {
+                    step = (std::size_t) std::abs(delta_x);
+                }
+                else
+                {
+                    step = (std::size_t) std::abs(delta_y);
+                }
+
+                delta_x = delta_x / (float) step;
+                delta_y = delta_y / (float) step;
+                float x = x1;
+                float y = y1;
+
+                for (std::size_t i = 0; i <= step; ++i)
+                {
+                    canvas->setPixel((std::size_t) std::round(x), (std::size_t) std::round(y), this->color);
+                    x = x + delta_x;
+                    y = y + delta_y;
+                }
+
+#elif _LINE_ALGORITHM == 3
+
+                size_t delta_y = y2 - y1;
+                size_t delta_x = x2 - x1;
+
+                size_t D = 2 * delta_y - delta_x;
+                size_t y = y1;
+
+                for (size_t x = x1; x <= x2; x++)
+                {
+                    this->setPixel(x, y, color);
+                    if (D > 0)
+                    {
+                        y += 1;
+                        D = D - 2 * delta_x;
+                    }
+                    D = D + 2 * delta_y;
+                }
+
+#endif
             }
             else
             {
-                step = (std::size_t) std::abs(delta_y);
-            }
+#if _LINE_ALGORITHM == 0
 
-            delta_x = delta_x / (float) step;
-            delta_y = delta_y / (float) step;
-            float x = x1;
-            float y = y1;
-
-            for (std::size_t i = 0; i <= step; ++i)
-            {
-                canvas->setPixel((std::size_t) std::round(x), (std::size_t) std::round(y), this->color);
-                x = x + delta_x;
-                y = y + delta_y;
-            }
-
-            #elif _LINE_ALGORITHM == 3
-
-            size_t delta_y = y2 - y1;
-            size_t delta_x = x2 - x1;
-
-            size_t D = 2 * delta_y - delta_x;
-            size_t y = y1;
-
-            for (size_t x = x1; x <= x2; x++)
-            {
-                this->setPixel(x, y, color);
-                if (D > 0)
+                if (x2 < x1)
                 {
-                    y += 1;
-                    D = D - 2 * delta_x;
+                    std::swap(x1, x2);
+                    std::swap(y1, y2);
                 }
-                D = D + 2 * delta_y;
-            }
 
-            #endif
+                float y;
+                float delta_x = (float) ((int) x2 - (int) x1);
+                float delta_y = (float) ((int) y2 - (int) y1);
+                float gradient = delta_y / delta_x;
+
+                for (std::size_t x = x1; x <= x2; x++)
+                {
+                    y = (float) y1 + (gradient * (float) ((int) x - (int) x1));
+                    canvas->setPixel(x, (std::size_t) std::round(y), this->color);
+                }
+
+#elif _LINE_ALGORITHM == 1
+
+                // Have a problem when delta_x < delta_y
+                float delta_y = (float)(y2 - y1);
+                float delta_x = (float)(x2 - x1);
+                float gradient = delta_y / delta_x;
+
+                float c = (float) y1 - gradient * (float) x1;
+
+                for (size_t x = x1; x <= x2; x++)
+                {
+                    float y = gradient * (float) x + c;
+                    canvas->setPixel(x, (size_t) std::round(y), this->color);
+                }
+
+#elif _LINE_ALGORITHM == 2
+
+                std::size_t step;
+                float delta_y = (float) ((int) y2 - (int) y1);
+                float delta_x = (float) ((int) x2 - (int) x1);
+
+                if (std::abs(delta_x) >= std::abs(delta_y))
+                {
+                    step = (std::size_t) std::abs(delta_x);
+                }
+                else
+                {
+                    step = (std::size_t) std::abs(delta_y);
+                }
+
+                delta_x = delta_x / (float) step;
+                delta_y = delta_y / (float) step;
+                float x = x1;
+                float y = y1;
+
+                for (std::size_t i = 0; i <= step; ++i)
+                {
+                    canvas->alternateSetPixel((std::size_t) std::round(x), (std::size_t) std::round(y), this->color);
+                    x = x + delta_x;
+                    y = y + delta_y;
+                }
+
+#elif _LINE_ALGORITHM == 3
+
+                size_t delta_y = y2 - y1;
+                size_t delta_x = x2 - x1;
+
+                size_t D = 2 * delta_y - delta_x;
+                size_t y = y1;
+
+                for (size_t x = x1; x <= x2; x++)
+                {
+                    this->setPixel(x, y, color);
+                    if (D > 0)
+                    {
+                        y += 1;
+                        D = D - 2 * delta_x;
+                    }
+                    D = D + 2 * delta_y;
+                }
+
+#endif
+            }
         }
 
         class LineBuilder
