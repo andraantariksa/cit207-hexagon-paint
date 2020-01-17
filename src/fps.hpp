@@ -11,7 +11,7 @@ class FPS: public sf::Drawable
     unsigned int character_size;
 
     public:
-    FPS(unsigned int character_size = 15, const char * font_file_location = "fonts/OpenSans-Regular.ttf")
+    FPS(unsigned int character_size = 15, const char * font_file_location = "../fonts/OpenSans-Regular.ttf")
     {
         this->current_time = 0;
         this->character_size = character_size;
