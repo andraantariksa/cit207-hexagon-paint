@@ -42,7 +42,6 @@ namespace shape
 
                 for (std::size_t i = 0; i <= step; ++i)
                 {
-                    std::printf("%d\n", this->is_dotted);
                     if ((this->is_dotted && i % 9 < 4) || !this->is_dotted)
                     {
                         canvas->setPixel((std::size_t) std::round(x), (std::size_t) std::round(y), this->color);

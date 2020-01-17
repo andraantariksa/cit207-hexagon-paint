@@ -24,6 +24,7 @@ private:
         LineTo,
         LineDone,
         PenDraw,
+        PenIdle,
     };
 
     sf::RenderWindow* window;
@@ -104,14 +105,37 @@ public:
                 if (mouse_position.x >= 200 && mouse_position.x <= 200 + this->canvas->getWidth()
                     && mouse_position.y >= 0 && mouse_position.y <= 0 + this->canvas->getHeight())
                 {
-                    if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
+                    if (!sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
                     {
                         if (this->state == State::PenDraw)
                         {
-                            this->canvas->setPixel(mouse_position.x - 200, mouse_position.y, chosen_color);
+                            this->state = State::PenIdle;
                         }
                     }
-                    
+
+                    if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
+                    {
+                        if (this->state == State::PenIdle)
+                        {
+                            this->canvas->setPixel(mouse_position.x - 200, mouse_position.y, chosen_color);
+                            x1 = mouse_position.x - 200;
+                            y1 = mouse_position.y;
+                            this->state = State::PenDraw;
+                        }
+                        else if (this->state == State::PenDraw)
+                        {
+                            shape::Line line = shape::Line::from(x1, y1)
+                                .to(mouse_position.x - 200, mouse_position.y)
+                                .withColor(chosen_color)
+                                .build();
+                            this->canvas->drawShape(&line);
+                            x1 = mouse_position.x - 200;
+                            y1 = mouse_position.y;
+//                            this->canvas->setPixel(mouse_position.x - 200, mouse_position.y, chosen_color);
+                            this->state = State::PenDraw;
+                        }
+                    }
+
                     if (event.type == sf::Event::MouseButtonPressed)
                     {
                         if (this->state == State::LineFrom)
@@ -204,7 +228,7 @@ public:
                         // Pen
                         if (ImGui::ImageButton(texture_icon_pen, ImVec2(32, 32)))
                         {
-                            this->state = State::PenDraw;
+                            this->state = State::PenIdle;
                         }
                         if (ImGui::IsItemHovered())
                             ImGui::SetTooltip("Pen");
