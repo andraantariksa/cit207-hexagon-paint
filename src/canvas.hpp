@@ -82,9 +82,9 @@ class Canvas: public sf::Drawable
         delete this->pixels_alternate;
     }
 
-    inline void alternateSetPixel(size_t x, size_t y, Color color)
+    inline void alternateSetPixel(int x, int y, Color color)
     {
-        const size_t current_pixel_pos = (x + (y * this->width)) * 4;
+        const int current_pixel_pos = (x + (y * this->width)) * 4;
         this->pixels_alternate[current_pixel_pos] = color.getRed();
         this->pixels_alternate[current_pixel_pos + 1] = color.getGreen();
         this->pixels_alternate[current_pixel_pos + 2] = color.getBlue();
@@ -103,8 +103,21 @@ class Canvas: public sf::Drawable
 
     inline bool load(const char* const file_name)
     {
-        unsigned int _width, _height;
-        return (bool) lodepng_decode32_file(&this->pixels, &_width, &_height, file_name);
+		sf::Uint8 *temp_source;
+        unsigned int loaded_width, loaded_height;
+		if (lodepng_decode32_file(&temp_source, &loaded_width, &loaded_height, file_name))
+		{
+			return false;
+		}
+
+		if (this->width != loaded_width || this->height != loaded_height)
+		{
+			return false;
+		}
+
+		std::memcpy(this->pixels, temp_source, this->width * this->height * 4);
+		std::free(temp_source);
+		return true;
     }
 
 
@@ -124,9 +137,9 @@ class Canvas: public sf::Drawable
         delete pixels;
     }
 
-    inline void setPixel(size_t x, size_t y, Color color)
+    inline void setPixel(int x, int y, Color color)
     {
-        const size_t current_pixel_pos = (x + (y * this->width)) * 4;
+        const int current_pixel_pos = (x + (y * this->width)) * 4;
         this->pixels[current_pixel_pos] = color.getRed();
         this->pixels[current_pixel_pos + 1] = color.getGreen();
         this->pixels[current_pixel_pos + 2] = color.getBlue();

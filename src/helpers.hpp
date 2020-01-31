@@ -44,7 +44,7 @@ bool LoadTextureFromFile(const char* filename, unsigned int* out_texture, int* o
 
 void defaultPNGFilename(char string[22])
 {
-    std::time_t now = std::time(0);
+    std::time_t now = std::time(nullptr);
     std::tm* time_s = std::localtime(&now);
     std::sprintf(string, "%d-%d-%d-%d-%d-%d.png",
         time_s->tm_year + 1900,

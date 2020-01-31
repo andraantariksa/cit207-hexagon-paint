@@ -78,7 +78,7 @@ public:
         LoadTextureFromFile("../assets/line.png", &texture_icon_line, &my_image_width, &my_image_height);
         LoadTextureFromFile("../assets/pen.png", &texture_icon_pen, &my_image_width, &my_image_height);
 
-        int x1, y1, x2, y2;
+        int x1, y1;
 
         while (this->window->isOpen())
         {
@@ -149,6 +149,7 @@ public:
                             this->canvas->alternateEnd();
                             auto line_pending = shape::Line::from(x1, y1)
                                 .to(mouse_position.x - 200, mouse_position.y)
+                                .withWidth(line_width_size)
                                 .withColor(chosen_color);
 
                             if (line_is_dotted)
@@ -191,7 +192,10 @@ public:
                             filter_pattern,
                             "PNG",
                             false);
-                        this->canvas->load(file_name);
+                        if (!this->canvas->load(file_name))
+						{
+//                        	MessageBox::error("File could not be loaded. It may not have PNG encoding or have different width and height");
+						}
                     }
                     if (ImGui::MenuItem("Save"))
                     {
@@ -217,7 +221,7 @@ public:
             // End main menu
 
             ImGui::SetNextWindowPos(ImVec2(0, main_menu_bar_height));
-            ImGui::SetNextWindowSize(ImVec2(200, 300));
+            ImGui::SetNextWindowSize(ImVec2(200, 500));
             if (ImGui::Begin("Toolbox", nullptr,
                 ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize))
             {
@@ -256,13 +260,13 @@ public:
 
                         ImGui::SameLine();
 
-                        ImGui::DragInt("Width", &line_width_size, 1.0, 1, 5, "%d px");
+	                    ImGui::SliderInt("Width", &line_width_size, 1, 5, "%d px");
                     }
                 }
 
                 if (ImGui::CollapsingHeader("Color", ImGuiTreeNodeFlags_DefaultOpen))
                 {
-                    ImGui::ColorEdit3("Color", chosen_rgb_color);
+                    ImGui::ColorPicker3("Color", chosen_rgb_color);
                 }
                 if (ImGui::CollapsingHeader("Layer Tools", ImGuiTreeNodeFlags_DefaultOpen))
                 {
@@ -282,7 +286,10 @@ public:
                 {
                     auto line_pending = shape::Line::from(x1, y1)
                         .to(mouse_position.x - 200, mouse_position.y)
+                        .withWidth(line_width_size)
                         .withColor(chosen_color);
+
+					printf("size: %d\n", line_width_size);
 
                     if (line_is_dotted)
                     {
@@ -300,9 +307,118 @@ public:
             // Begin canvas draw
 
 //            sf::Vector2i mouse_pos = sf::Mouse::getPosition(*(this->window));
-//            auto l = shape::Line::from(300, 300).to(mouse_pos.x - 200, mouse_pos.y).build();
-//            auto l = shape::Line::from(300, 300).to(500, 500).build();
-//            this->canvas->drawShape(&l);
+//            auto l = shape::Line::from(300, 300).isDotted(true).to(mouse_pos.x - 200, mouse_pos.y).build();
+
+//            int xc = 300;
+//            int yc = 50;
+//
+//            int x = 0;
+//            int y = 0;
+//            int d = (x * x) + (2 * x) - (100 * y) - 49;
+//            while(x <= 50)
+//            {
+//                if (d >= 0)
+//                {
+//                    d += 2 * x - 97;
+//                    y++;
+//                }
+//                else
+//                {
+//                    d += 2 * x + 3;
+//                }
+//                x++;
+//                this->canvas->setPixel(xc + x, yc + y, Color::Red());
+//                this->canvas->setPixel(xc - x, yc + y, Color::Red());
+//                if (x == 50)
+//                {
+//                    break;
+//                }
+//            }
+
+//            int x_ = 50;
+//            int y_ = 25;
+//            int d_ = 4 * (x_ * x_) + 4 * x_ - 400 * y_ - 399;
+//            while(y_ <= 400)
+//            {
+//                if (d_ >= 0)
+//                {
+//                    d_ += -400;
+//                }
+//                else
+//                {
+//                    d_ += 8 * x_ - 392;
+//                    x_++;
+//                }
+//                y_++;
+//                this->canvas->setPixel(xc  + x_, yc + y_, Color::Red());
+//                this->canvas->setPixel(xc  - x_, yc + y_, Color::Red());
+//            }
+
+            auto l3 = shape::Line::from(300, 300).isDotted(false).to(400, 300).withWidth(5).build();
+            this->canvas->drawShape(&l3);
+
+            auto l4 = shape::Line::from(300, 300).isDotted(false).to(200, 300).withWidth(5).build();
+            this->canvas->drawShape(&l4);
+
+            auto l5 = shape::Line::from(300, 300).isDotted(false).to(300, 400).withWidth(5).build();
+            this->canvas->drawShape(&l5);
+
+            auto l6 = shape::Line::from(300, 300).isDotted(false).to(300, 200).withWidth(5).build();
+            this->canvas->drawShape(&l6);
+
+            // Diagonal
+
+            auto l = shape::Line::from(300, 300).isDotted(false).to(400, 400).withWidth(5).build();
+            this->canvas->drawShape(&l);
+
+            auto l2 = shape::Line::from(300, 300).isDotted(false).to(200, 200).withWidth(5).build();
+            this->canvas->drawShape(&l2);
+
+            auto l7 = shape::Line::from(300, 300).isDotted(false).to(400, 200).withWidth(5).build();
+            this->canvas->drawShape(&l7);
+
+            auto l8 = shape::Line::from(300, 300).isDotted(false).to(200, 400).withWidth(5).build();
+            this->canvas->drawShape(&l8);
+
+            // Quadrant 1
+
+            // Sharp
+            auto l9 = shape::Line::from(300, 300).isDotted(true).to(400, 350).withWidth(5).build();
+            this->canvas->drawShape(&l9);
+
+            // Steep
+            auto l10 = shape::Line::from(300, 300).isDotted(true).to(350, 400).withWidth(5).build();
+            this->canvas->drawShape(&l10);
+
+            // Quadrant 2
+
+            // Sharp
+            auto l12 = shape::Line::from(300, 300).isDotted(true).to(200, 350).withWidth(5).build();
+            this->canvas->drawShape(&l12);
+
+            // Steep
+            auto l11 = shape::Line::from(300, 300).isDotted(true).to(250, 400).withWidth(5).build();
+            this->canvas->drawShape(&l11);
+
+            // Quadrant 3
+
+            // Sharp
+            auto l13 = shape::Line::from(300, 300).isDotted(true).to(200, 250).withWidth(5).build();
+            this->canvas->drawShape(&l13);
+
+            // Steep
+            auto l14 = shape::Line::from(300, 300).isDotted(true).to(250, 200).withWidth(5).build();
+            this->canvas->drawShape(&l14);
+
+            // Quadrant 4
+
+            // Sharp
+            auto l15 = shape::Line::from(300, 300).isDotted(true).to(350, 200).withWidth(5).build();
+            this->canvas->drawShape(&l15);
+
+            // Steep
+            auto l16 = shape::Line::from(300, 300).isDotted(true).to(400, 250).withWidth(5).build();
+            this->canvas->drawShape(&l16);
 
             // End canvas draw
 
