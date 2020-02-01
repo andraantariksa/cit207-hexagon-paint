@@ -107,11 +107,13 @@ class Canvas: public sf::Drawable
         unsigned int loaded_width, loaded_height;
 		if (lodepng_decode32_file(&temp_source, &loaded_width, &loaded_height, file_name))
 		{
+			printf("Can't load image, it may not encoded in PNG\n");
 			return false;
 		}
 
 		if (this->width != loaded_width || this->height != loaded_height)
 		{
+			printf("Invalid width and height\n");
 			return false;
 		}
 

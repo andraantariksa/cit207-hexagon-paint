@@ -354,71 +354,71 @@ public:
 //                this->canvas->setPixel(xc  - x_, yc + y_, Color::Red());
 //            }
 
-            auto l3 = shape::Line::from(300, 300).isDotted(false).to(400, 300).withWidth(5).build();
-            this->canvas->drawShape(&l3);
-
-            auto l4 = shape::Line::from(300, 300).isDotted(false).to(200, 300).withWidth(5).build();
-            this->canvas->drawShape(&l4);
-
-            auto l5 = shape::Line::from(300, 300).isDotted(false).to(300, 400).withWidth(5).build();
-            this->canvas->drawShape(&l5);
-
-            auto l6 = shape::Line::from(300, 300).isDotted(false).to(300, 200).withWidth(5).build();
-            this->canvas->drawShape(&l6);
-
-            // Diagonal
-
-            auto l = shape::Line::from(300, 300).isDotted(false).to(400, 400).withWidth(5).build();
-            this->canvas->drawShape(&l);
-
-            auto l2 = shape::Line::from(300, 300).isDotted(false).to(200, 200).withWidth(5).build();
-            this->canvas->drawShape(&l2);
-
-            auto l7 = shape::Line::from(300, 300).isDotted(false).to(400, 200).withWidth(5).build();
-            this->canvas->drawShape(&l7);
-
-            auto l8 = shape::Line::from(300, 300).isDotted(false).to(200, 400).withWidth(5).build();
-            this->canvas->drawShape(&l8);
-
-            // Quadrant 1
-
-            // Sharp
-            auto l9 = shape::Line::from(300, 300).isDotted(true).to(400, 350).withWidth(5).build();
-            this->canvas->drawShape(&l9);
-
-            // Steep
-            auto l10 = shape::Line::from(300, 300).isDotted(true).to(350, 400).withWidth(5).build();
-            this->canvas->drawShape(&l10);
-
-            // Quadrant 2
-
-            // Sharp
-            auto l12 = shape::Line::from(300, 300).isDotted(true).to(200, 350).withWidth(5).build();
-            this->canvas->drawShape(&l12);
-
-            // Steep
-            auto l11 = shape::Line::from(300, 300).isDotted(true).to(250, 400).withWidth(5).build();
-            this->canvas->drawShape(&l11);
-
-            // Quadrant 3
-
-            // Sharp
-            auto l13 = shape::Line::from(300, 300).isDotted(true).to(200, 250).withWidth(5).build();
-            this->canvas->drawShape(&l13);
-
-            // Steep
-            auto l14 = shape::Line::from(300, 300).isDotted(true).to(250, 200).withWidth(5).build();
-            this->canvas->drawShape(&l14);
-
-            // Quadrant 4
-
-            // Sharp
-            auto l15 = shape::Line::from(300, 300).isDotted(true).to(350, 200).withWidth(5).build();
-            this->canvas->drawShape(&l15);
-
-            // Steep
-            auto l16 = shape::Line::from(300, 300).isDotted(true).to(400, 250).withWidth(5).build();
-            this->canvas->drawShape(&l16);
+//            auto l3 = shape::Line::from(300, 300).isDotted(false).to(400, 300).withWidth(5).build();
+//            this->canvas->drawShape(&l3);
+//
+//            auto l4 = shape::Line::from(300, 300).isDotted(false).to(200, 300).withWidth(5).build();
+//            this->canvas->drawShape(&l4);
+//
+//            auto l5 = shape::Line::from(300, 300).isDotted(false).to(300, 400).withWidth(5).build();
+//            this->canvas->drawShape(&l5);
+//
+//            auto l6 = shape::Line::from(300, 300).isDotted(false).to(300, 200).withWidth(5).build();
+//            this->canvas->drawShape(&l6);
+//
+//            // Diagonal
+//
+//            auto l = shape::Line::from(300, 300).isDotted(false).to(400, 400).withWidth(5).build();
+//            this->canvas->drawShape(&l);
+//
+//            auto l2 = shape::Line::from(300, 300).isDotted(false).to(200, 200).withWidth(5).build();
+//            this->canvas->drawShape(&l2);
+//
+//            auto l7 = shape::Line::from(300, 300).isDotted(false).to(400, 200).withWidth(5).build();
+//            this->canvas->drawShape(&l7);
+//
+//            auto l8 = shape::Line::from(300, 300).isDotted(false).to(200, 400).withWidth(5).build();
+//            this->canvas->drawShape(&l8);
+//
+//            // Quadrant 1
+//
+//            // Sharp
+//            auto l9 = shape::Line::from(300, 300).isDotted(false).to(400, 350).withWidth(5).build();
+//            this->canvas->drawShape(&l9);
+//
+//            // Steep
+//            auto l10 = shape::Line::from(300, 300).isDotted(false).to(350, 400).withWidth(5).build();
+//            this->canvas->drawShape(&l10);
+//
+//            // Quadrant 2
+//
+//            // Sharp
+//            auto l12 = shape::Line::from(300, 300).isDotted(false).to(200, 350).withWidth(5).build();
+//            this->canvas->drawShape(&l12);
+//
+//            // Steep
+//            auto l11 = shape::Line::from(300, 300).isDotted(false).to(250, 400).withWidth(5).build();
+//            this->canvas->drawShape(&l11);
+//
+//            // Quadrant 3
+//
+//            // Sharp
+//            auto l13 = shape::Line::from(300, 300).isDotted(false).to(200, 250).withWidth(5).build();
+//            this->canvas->drawShape(&l13);
+//
+//            // Steep
+//            auto l14 = shape::Line::from(300, 300).isDotted(false).to(250, 200).withWidth(5).build();
+//            this->canvas->drawShape(&l14);
+//
+//            // Quadrant 4
+//
+//            // Sharp
+//            auto l15 = shape::Line::from(300, 300).isDotted(false).to(350, 200).withWidth(5).build();
+//            this->canvas->drawShape(&l15);
+//
+//            // Steep
+//            auto l16 = shape::Line::from(300, 300).isDotted(false).to(400, 250).withWidth(5).build();
+//            this->canvas->drawShape(&l16);
 
             // End canvas draw
 
@@ -432,7 +432,7 @@ public:
             }
 
             this->window->draw(*this->canvas);
-            this->window->draw(fps);
+//            this->window->draw(fps);
 
             ImGui::SFML::Render(*this->window);
             this->window->display();
