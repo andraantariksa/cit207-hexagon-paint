@@ -1,6 +1,6 @@
-# Learn 2D Computer Graphics and Animation
+# Hexagon Paint
 
-This repository is intended for my Computer Graphics and Animation course
+This repository is intended for my Computer Graphics and Animation (CIT207) course
 
 ## Prerequisites
 
