@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _CANVAS_HPP
+#define _CANVAS_HPP
 
 #include <SFML/Graphics.hpp>
 
@@ -11,17 +12,7 @@
 
 #include "color.hpp"
 
-#include "../lib/lodepng/lodepng.h"
-// Set it up manually by renaming the lodepng.cpp to lodepng.c
-#include "../lib/lodepng/lodepng.c"
-
-class Canvas;
-
-class CanvasDrawable
-{
-    public:
-    virtual void draw(Canvas*) = 0;
-};
+class CanvasDrawable;
 
 class Canvas: public sf::Drawable
 {
@@ -36,146 +27,53 @@ class Canvas: public sf::Drawable
     bool is_alternate_on;
 
     public:
-    Canvas(const unsigned int width, const unsigned int height, sf::Vector2f position = sf::Vector2f(0.0f, 0.0f))
-    {
-        this->is_alternate_on = false;
-        this->width = width;
-        this->height = height;
-        this->position = position;
-        this->sprite.setPosition(position);
-        this->pixels = new sf::Uint8[this->width * this->height * 4];
-        this->texture.create(this->width, this->height);
-        this->sprite.setTexture(this->texture);
-        this->clear();
-    }
+    Canvas(const unsigned int width, const unsigned int height, sf::Vector2f position = sf::Vector2f(0.0f, 0.0f));
 
-    unsigned int getWidth() const
-    {
-        return this->width;
-    }
+    unsigned int getWidth() const;
 
-    inline unsigned int getHeight() const
-    {
-        return this->height;
-    }
+    unsigned int getHeight() const;
 
-    inline bool isAlternateOn()
-    {
-        return this->is_alternate_on;
-    }
+    bool isAlternateOn();
 
-    inline void alternateBegin()
-    {
-        this->is_alternate_on = true;
-        this->pixels_alternate = new sf::Uint8[this->width * this->height * 4];
-        std::copy(this->pixels, this->pixels + (this->width * this->height * 4), this->pixels_alternate);
-    }
+    void alternateBegin();
 
-    inline void alternateFromMain()
-    {
-        std::copy(this->pixels, this->pixels + (this->width * this->height * 4), this->pixels_alternate);
-    }
+    void alternateFromMain();
 
-    inline void alternateEnd()
-    {
-        this->is_alternate_on = false;
-        delete this->pixels_alternate;
-    }
+    void alternateEnd();
 
-    inline void alternateSetPixel(int x, int y, Color color)
-    {
-        const int current_pixel_pos = (x + (y * this->width)) * 4;
-        this->pixels_alternate[current_pixel_pos] = color.getRed();
-        this->pixels_alternate[current_pixel_pos + 1] = color.getGreen();
-        this->pixels_alternate[current_pixel_pos + 2] = color.getBlue();
-        this->pixels_alternate[current_pixel_pos + 3] = color.getAlpha();
-    }
+    void alternateSetPixel(int x, int y, Color color);
 
-    inline void alternateUpdate()
-    {
-        this->texture.update(this->pixels_alternate);
-    }
+    void alternateUpdate();
 
-    inline bool save(const char* const file_name)
-    {
-        return (bool) lodepng_encode32_file(file_name, this->pixels, this->width, this->height);
-    }
+    bool save(const char* const file_name);
 
-    inline bool load(const char* const file_name)
-    {
-		sf::Uint8 *temp_source;
-        unsigned int loaded_width, loaded_height;
-		if (lodepng_decode32_file(&temp_source, &loaded_width, &loaded_height, file_name))
-		{
-			printf("Can't load image, it may not encoded in PNG\n");
-			return false;
-		}
-
-		if (this->width != loaded_width || this->height != loaded_height)
-		{
-			printf("Invalid width and height\n");
-			return false;
-		}
-
-		std::memcpy(this->pixels, temp_source, this->width * this->height * 4);
-		std::free(temp_source);
-		return true;
-    }
+    bool load(const char* const file_name);
 
 
-    inline void setPosition(sf::Vector2f position)
-    {
-        this->position = position;
-        this->sprite.setPosition(position);
-    }
+    void setPosition(sf::Vector2f position);
 
-    inline sf::Vector2f getPosition()
-    {
-        return this->sprite.getPosition();
-    }
+    sf::Vector2f getPosition();
 
-    ~Canvas()
-    {
-        delete pixels;
-    }
+    ~Canvas();
 
-    inline void setPixel(int x, int y, Color color)
-    {
-        const int current_pixel_pos = (x + (y * this->width)) * 4;
-        this->pixels[current_pixel_pos] = color.getRed();
-        this->pixels[current_pixel_pos + 1] = color.getGreen();
-        this->pixels[current_pixel_pos + 2] = color.getBlue();
-        this->pixels[current_pixel_pos + 3] = color.getAlpha();
-    }
+    void setPixel(int x, int y, Color color);
 
-    void update()
-    {
-        this->texture.update(this->pixels);
-    }
+    void update();
 
-    void clear()
-    {
-        std::memset(this->pixels, 255, this->width * this->height * 4);
-    }
+    void clear();
 
-    void drawShapes(std::vector<CanvasDrawable*> canvas_drawables)
-    {
-        for (std::vector<CanvasDrawable*>::iterator it = canvas_drawables.begin();
-            it != canvas_drawables.end(); ++it)
-        {
-            (*it)->draw(this);
-        }
-    }
+    void drawShapes(std::vector<CanvasDrawable*> canvas_drawables);
 
-    inline void drawShape(CanvasDrawable* canvas_drawable)
-    {
-        canvas_drawable->draw(this);
-    }
+    void drawShape(CanvasDrawable* canvas_drawable);
 
-    void draw(sf::RenderTarget& target, sf::RenderStates states) const
-    {
-        target.draw(sprite);
-    }
+    void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 };
 
-#include "shape/line.hpp"
+
+class CanvasDrawable
+{
+public:
+    virtual void draw(Canvas*) = 0;
+};
+
+#endif

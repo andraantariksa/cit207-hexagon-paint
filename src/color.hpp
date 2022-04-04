@@ -1,4 +1,7 @@
-#pragma once
+#ifndef _COLOR_HPP
+#define _COLOR_HPP
+
+#include <SFML/Graphics.hpp>
 
 class Color
 {
@@ -76,3 +79,5 @@ class Color
         return color;
     }
 };
+
+#endif

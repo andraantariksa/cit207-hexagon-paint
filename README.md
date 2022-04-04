@@ -22,12 +22,28 @@ You cannot use the bulit-in line drawing procedure.
 
 https://drive.google.com/open?id=1KWUTyayYVD_g-uJN614gGsWqAmayvnhp
 
-## Prerequisites
+## Features
+
+- Draw using pen tool
+- Draw line
+- Clear canvas
+- Color selection
+- Load and save image in PNG format
+
+## Screenshot
+
+![Draw using pen tool](assets/1.gif)
+![Draw lines](assets/2.gif)
+![Clear canvas](assets/3.gif)
+
+## Building
+
+### Prerequisites
 
 - CMake >= 3.10
 - C++17 supported compiler
 
-## Installation
+### Installation
 
 - Clone to local
 - Pull the dependencies
